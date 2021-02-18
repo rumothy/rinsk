@@ -151,6 +151,112 @@ namespace Rinsk.CodeAnalysis.Syntax
             }
             _kind = SyntaxKind.WhitespaceTrivia;
         }
+
+        private void ReadSingleLineComment()
+        {
+            _position += 2;
+            var done = false;
+
+            while (!done)
+            {
+                switch (Current)
+                {
+                    case '\0':
+                    case '\r':
+                    case '\n':
+                        done = true;
+                        break;
+                    default: 
+                        _position++;
+                        break;
+                }
+            }
+
+            _kind = SyntaxKind.SingleLineCommentTrivia;
+        }
+
+        private void ReadMultiLineComment()
+        {
+            _position += 2;
+            var done = false;
+
+            while (!done)
+            {
+                switch (Current)
+                {
+                    case '\0':
+                        var span = new TextSpan(_start, 2);
+                        var location = new TextLocation(_text, span);
+                        _diagnostics.ReportUnerminatedMultiLineComment(location);
+                        done = true;
+                        break; 
+                    case '*':
+                        if (Lookahead == '/')
+                        {
+                            _position++;
+                            done = true;
+                        }
+                        position++;
+                        break;
+                    default:
+                        _position++;
+                        break;
+                }
+            }
+            
+            _kind = SyntaxKind.MultiLineCommentTrivia;
+        }
+
+        private void ReadToken()
+        {
+            _start = _position;
+            _kind = SyntaxKind.BadToken;
+            _value = null;
+
+            switch (Current)
+            {
+                case '\0':
+                    _kine = SyntaxKind.EndOfFileToken;
+                    break;
+                case '+':
+                    _position++;
+                    if (Current != '=')
+                    {
+                        _kind = SyntaxKind.PlusToken;
+                    }
+                    else
+                    {
+                        _kind = SyntaxKind.PlusEqualsToken;
+                        _position++;
+                    }
+                    break;
+                case '-':
+                    _position++;
+                    if (Current != '=')
+                    {
+                        _kind = SyntaxKind.MinusToken;
+                    }
+                    else 
+                    {
+                        _kind = SyntaxKind.MinusEqualsToken;
+                        _position++;
+                    }
+                    break;
+                case '*':
+                    _position++;
+                    if (Current != '=')
+                    {
+                        _kind = SyntaxKind.StarToken;
+                    }
+                    else
+                    {
+                        _kind = SyntaxKind.StarEqualsToken;
+                        _position++;
+                    }
+                    break;
+                case '/':
+            }
+        }
     }
     
 }
