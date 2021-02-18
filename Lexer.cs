@@ -255,7 +255,172 @@ namespace Rinsk.CodeAnalysis.Syntax
                     }
                     break;
                 case '/':
+                    _position++;
+                    if (Current != '=')
+                    {
+                        _kind = SyntaxKind.SlashToken;
+                    }
+                    else
+                    {
+                        _kind = SyntaxKind.SlashEqualsToken;
+                        _position++;
+                    }
+                    break;
+                case '(':
+                    _kind = SyntaxKind.OpenParenthesisToken;
+                    _position++;
+                    break;
+                case ')':
+                    _kind = SyntaxKind.CloseParenthesisToken;
+                    _position++;
+                    break;
+                case '{':
+                    _kind = SyntaxKind.OpenBraceToken;
+                    _position++;
+                    break;
+                case '}':
+                    _kind = SyntaxKind.CloseBraceToken;
+                    _position++;
+                case ':':
+                    _kind = SyntaxKind.ColonToken;
+                    _position++;
+                    break;
+                case ',':
+                    _kind = SyntaxKind.CommaToken;
+                    _position++;
+                    break;
+                case '~':
+                    _kind = SyntaxKind.TildeToken;
+                    _position++;
+                    break;
+                case '^':
+                    _position++;
+                    if (Current != '=')
+                    {
+                        _kind = SyntaxKind.HatToken;
+                    }
+                    else
+                    {
+                        _kind = SyntaxKind.HatEqualsToken;
+                        _position++;
+                    }
+                    break;
+                case '&':
+                    _position++;
+                    if (Current == '&')
+                    {
+                        _kind = SyntaxKind.AmpersandAmpersandToken;
+                        _position++;
+                    }
+                    else
+                    {
+                        _kind = SyntaxKind.AmpersandToken;
+                    }
+                    break;
+                case '|':
+                    _position++;
+                    if (Current == '|')
+                    {
+                        _kind = SyntaxKind.PipePipeToken;
+                        _position++;
+                    }
+                    else if (Current == '=')
+                    {
+                        _kind = SyntaxKind.PipeEqualsToken;
+                        _position++;
+                    }
+                    else
+                    {
+                        _kind = SyntaxKind.PipeToken;
+                    }
+                    break;
+                case '=': 
+                    _postion++;
+                    if (Current != '=')
+                    {
+                        _kind = SyntaxKind.EqualsToken;
+                    }
+                    else 
+                    {
+                        _kind = SyntaxKind.EqualsEqualsToken;
+                        _position++;
+                    }
+                    break;
+                case '!':
+                    _position++;
+                    if (Current != '=')
+                    {
+                        _kind = SyntaxKind.BangToken;
+                    }
+                    else
+                    {
+                        _kind = SyntaxKind. BangEqualsToken;
+                        _position++;
+                    }
+                    break;
+                case '<':
+                    _position++;
+                    if (Current != '=')
+                    {
+                        _kind = SyntaxKind.LessToken;
+                    }
+                    else 
+                    {
+                        _kind = SyntaxKind.LessOrEqualsToken;
+                        _position++;
+                    }
+                    break;
+                case '>':
+                    _position++;
+                    if (Current != '=')
+                    {
+                        _kind = SyntaxKind.GreaterToken;
+                    }
+                    else
+                    {
+                        _kind = SyntaxKind.GreaterOrEqualsToken;
+                        _position++;
+                    }
+                    break;
+                case '"':
+                    ReadString();
+                    break;
+                case '0': case '1': case '2': case '3': case '4':
+                case '5': case '6': case '7': case '8': case '9':
+                    ReadNumber();
+                    break;
+                case '_': 
+                    ReadIdentifierOrKeyword();
+                    break;
+                default: 
+                    if (char.IsLetter(Current))
+                    {
+                        ReadIdentifierOrKeyword();
+                    }
+                    else
+                    {
+                        var span = new TextSpan(_position, 1);
+                        var location = new TextLocation(_text, span);
+                        _diagnostics.ReportBadCharacter(location, Current);
+                        _position++;
+                    }
+                    break;
             }
+        }
+
+        private void ReadString()
+        {
+
+        }
+        
+        private void ReadNumber() 
+        {
+
+        }
+
+        private void ReadIdentifierOrKeyword()
+        {
+
         }
     }
     
