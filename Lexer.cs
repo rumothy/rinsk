@@ -410,17 +410,74 @@ namespace Rinsk.CodeAnalysis.Syntax
 
         private void ReadString()
         {
+            // Skip the current quote
+            _position++;
 
+            var sb = new StringBuilder();
+            var done = false;
+
+            while (!done)
+            {
+                switch (Current)
+                {
+                    case '\0':
+                    case '\r':
+                    case '\n':
+                        var span = new TextSpan(_start, 1);
+                        var location = new TextLocation(_text, span);
+                        _diagnostics.ReportUnterminatedString(location);
+                        done = true;
+                        break;
+                    case '"':
+                        if (Lookahead == '"')
+                        {
+                            sb.Appent(Current);
+                            _position += 2;
+                        }
+                        else
+                        {
+                            _position++;
+                            done = true;
+                        }
+                        break;
+                    default:
+                        sb.Append(Current);
+                        _position++;
+                        break;
+                }
+            }
+
+            _kind = SyntaxKind.StringToken;
+            _value = sb.ToString();
         }
         
         private void ReadNumber() 
         {
+            while (char.IsDigit(Current))
+                _position++;
 
+            var length = _position - _start;
+            var text = _text.ToString(_start, length);
+            if (!int.TryParse(text, out var value))
+            {
+                var span = new TextSpan(_start, length);
+                var location = new TextLocation(_text, span);
+                _diagnostics.ReportInvalidNumber(location, text, TypeSymbol.Int);
+            }
+
+            _value = value;
+            _kind = SyntaxKind.NumberToken;
         }
+
 
         private void ReadIdentifierOrKeyword()
         {
-
+            while (char.IsLetterOrDigit(Current) || Current == '_')
+                _position++;
+            
+            var length = _position - _start;
+            var text = _text.ToString(_start, length);
+            _kind = SyntaxFacts.GetKeywordKind(text);
         }
     }
     
