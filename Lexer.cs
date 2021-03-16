@@ -1,5 +1,5 @@
 using System;
-using System.Collection.Immutable;
+using System.Collections.Immutable;
 using System.Text;
 
 namespace Rinsk.CodeAnalysis.Syntax
