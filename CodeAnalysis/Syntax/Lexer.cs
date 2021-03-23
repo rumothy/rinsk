@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Immutable;
 using System.Text;
+using Rinsk.CodeAnalysis.Symbols;
+using Rinsk.CodeAnalysis.Text;
 
 namespace Rinsk.CodeAnalysis.Syntax
 {
@@ -23,10 +25,10 @@ namespace Rinsk.CodeAnalysis.Syntax
             _text = syntaxTree.Text;
         }
 
-        public DiagnosticBagh Diagnostics => _diagnostics;
+        public DiagnosticBag Diagnostics => _diagnostics;
 
         private char Current => Peek(0);
-        private char Lookahead => Preek(1);
+        private char Lookahead => Peek(1);
         private char Peek(int offset)
         {
             var index = _position + offset;
@@ -54,7 +56,7 @@ namespace Rinsk.CodeAnalysis.Syntax
             if (tokenText == null)
                 tokenText = _text.ToString(tokenStart, tokenLength);
 
-                return new SyntaxToken(_syntaxTree, tokenKind, tokenStart, tokenText, tokenValue, leadingTrivia, trailingTrivai);
+                return new SyntaxToken(_syntaxTree, tokenKind, tokenStart, tokenText, tokenValue, leadingTrivia, trailingTrivia);
         }
 
         private void ReadTrivia(bool leading)

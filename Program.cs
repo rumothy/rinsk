@@ -1,6 +1,6 @@
 using System;
 
-namespace Rinsk.CodeAnalysis.Syntax 
+namespace Rinsk
 {
 	class Program
 	{
