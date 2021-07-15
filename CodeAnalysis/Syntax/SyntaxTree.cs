@@ -7,8 +7,13 @@ using Rinsk.CodeAnalysis.Text;
 
 namespace Rinsk.CodeAnalysis.Syntax
 {
-	internal class SyntaxTree
+	public sealed class SyntaxTree
 	{
 		public SourceText Text { get; }
+
+		internal SyntaxNode? GetParent(SyntaxNode syntaxNode)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
